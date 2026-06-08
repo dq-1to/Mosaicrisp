@@ -1,0 +1,86 @@
+name: CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Verify
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Detect package manager
+        id: pm
+        shell: bash
+        run: |
+          if [ -f pnpm-lock.yaml ]; then
+            echo "manager=pnpm" >> "$GITHUB_OUTPUT"
+            echo "install=pnpm install --frozen-lockfile" >> "$GITHUB_OUTPUT"
+            echo "run=pnpm run" >> "$GITHUB_OUTPUT"
+          elif [ -f yarn.lock ]; then
+            echo "manager=yarn" >> "$GITHUB_OUTPUT"
+            echo "install=yarn install --frozen-lockfile" >> "$GITHUB_OUTPUT"
+            echo "run=yarn" >> "$GITHUB_OUTPUT"
+          else
+            echo "manager=npm" >> "$GITHUB_OUTPUT"
+            echo "install=npm ci" >> "$GITHUB_OUTPUT"
+            echo "run=npm run" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: ${{ steps.pm.outputs.manager }}
+
+      - name: Enable Corepack
+        if: steps.pm.outputs.manager != 'npm'
+        run: corepack enable
+
+      - name: Install dependencies
+        run: ${{ steps.pm.outputs.install }}
+
+      - name: Detect scripts
+        id: scripts
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+          const scripts = pkg.scripts || {};
+          const standard = ['lint', 'typecheck', 'test', 'build'].filter((name) => scripts[name]);
+
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `has_verify=${scripts.verify ? 'true' : 'false'}\n`);
+          fs.writeFileSync('checks.txt', standard.join('\n'));
+
+          if (!scripts.verify && standard.length === 0) {
+            console.error('No verify/lint/typecheck/test/build scripts found. Adjust .github/workflows/ci.yml for this repository.');
+            process.exit(1);
+          }
+          NODE
+
+      - name: Run verify script
+        if: steps.scripts.outputs.has_verify == 'true'
+        run: |
+          ${{ steps.pm.outputs.run }} verify
+
+      - name: Run standard checks
+        if: steps.scripts.outputs.has_verify != 'true'
+        shell: bash
+        run: |
+          while read -r script; do
+            echo "Running $script"
+            ${{ steps.pm.outputs.run }} "$script"
+          done < checks.txt
