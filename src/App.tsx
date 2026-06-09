@@ -43,6 +43,52 @@ type ColorCenter = {
   alpha: number;
 };
 
+function MosaicrispMark() {
+  return (
+    <svg
+      className="brand-mark"
+      viewBox="0 0 64 64"
+      role="img"
+      aria-label="Mosaicrisp logo"
+    >
+      <rect className="brand-mark-bg" width="64" height="64" rx="14" />
+      <g className="brand-mark-corners" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3.6">
+        <path d="M47 13h7v7" />
+        <path d="M54 44v7h-7" />
+      </g>
+      <g className="brand-mark-tiles">
+        <rect x="12" y="12" width="8" height="8" rx="1.4" />
+        <rect x="22" y="12" width="8" height="8" rx="1.4" />
+        <rect x="32" y="12" width="8" height="8" rx="1.4" />
+        <rect x="12" y="22" width="8" height="8" rx="1.4" />
+        <rect x="22" y="22" width="8" height="8" rx="1.4" />
+        <rect x="12" y="32" width="8" height="8" rx="1.4" />
+        <rect x="22" y="32" width="8" height="8" rx="1.4" />
+        <rect x="32" y="32" width="8" height="8" rx="1.4" />
+        <rect x="12" y="42" width="8" height="8" rx="1.4" />
+        <rect x="22" y="42" width="8" height="8" rx="1.4" />
+      </g>
+      <g className="brand-mark-sparks">
+        <rect x="38" y="23" width="5" height="5" rx="1" />
+        <rect x="46" y="31" width="4" height="4" rx="0.8" />
+        <rect x="37" y="43" width="4.5" height="4.5" rx="0.9" />
+      </g>
+      <path
+        className="brand-mark-star"
+        d="M43.6 26.2c1.4 5.7 3.8 8.1 9.5 9.5-5.7 1.4-8.1 3.8-9.5 9.5-1.4-5.7-3.8-8.1-9.5-9.5 5.7-1.4 8.1-3.8 9.5-9.5Z"
+      />
+    </svg>
+  );
+}
+
+const SIDE_NAV_ITEMS = [
+  { label: '画像', icon: '▧' },
+  { label: 'プリセット', icon: '▦' },
+  { label: 'グリッド', icon: '⌗' },
+  { label: '色', icon: '●' },
+  { label: '出力', icon: '↓' },
+] as const;
+
 function clampGrid(value: number): number {
   return Math.min(MAX_GRID, Math.max(MIN_GRID, Math.round(value)));
 }
@@ -400,6 +446,7 @@ function App() {
 
   const previewCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const exportCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const objectUrlRef = useRef<string | null>(null);
 
   const activePreset = useMemo(() => {
@@ -583,27 +630,56 @@ function App() {
 
   return (
     <main className="app-shell">
-      <section className="tool-header" aria-labelledby="app-title">
-        <div>
-          <p className="eyebrow">ローカル画像ドット絵ツール</p>
-          <h1 id="app-title">Mosaicrisp</h1>
+      <header className="app-topbar" aria-labelledby="app-title">
+        <div className="brand-lockup">
+          <MosaicrispMark />
+          <div>
+            <p className="eyebrow">ローカル画像ドット絵ツール</p>
+            <h1 id="app-title">Mosaicrisp</h1>
+          </div>
         </div>
-        <button
-          className="primary-action"
-          type="button"
-          onClick={handleDownload}
-          disabled={!sourceImage}
-          title="PNGとしてダウンロード"
-        >
-          <span aria-hidden="true">↓</span>
-          PNG
-        </button>
-      </section>
+
+        <div className="topbar-actions">
+          <button
+            className="secondary-action"
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <span aria-hidden="true">▧</span>
+            画像を選択
+          </button>
+          <button
+            className="primary-action"
+            type="button"
+            onClick={handleDownload}
+            disabled={!sourceImage}
+            title="PNGとしてダウンロード"
+          >
+            <span aria-hidden="true">↓</span>
+            PNG
+          </button>
+        </div>
+      </header>
 
       <div className="tool-layout">
+        <nav className="side-toolbar" aria-label="主要ツール">
+          {SIDE_NAV_ITEMS.map((item, index) => (
+            <button
+              key={item.label}
+              className={index === 0 ? 'side-tool active' : 'side-tool'}
+              type="button"
+              title={item.label}
+              aria-label={item.label}
+            >
+              <span aria-hidden="true">{item.icon}</span>
+            </button>
+          ))}
+        </nav>
+
         <aside className="control-panel" aria-label="変換設定">
           <div className="upload-box">
             <input
+              ref={fileInputRef}
               id="image-upload"
               type="file"
               accept="image/*"
@@ -715,139 +791,140 @@ function App() {
             <canvas ref={previewCanvasRef} aria-label="ドット絵化したプレビュー" />
           </div>
 
-          <div className="color-panel" aria-label="プレビュー内の色数">
-            <div className="color-panel-heading">
-              <div>
-                <h2>色</h2>
-                <span>
-                  {sourceImage
-                    ? colorSummary
-                    : '画像選択後に集計します'}
-                </span>
-              </div>
-              {sourceImage ? (
-                <span className="transparent-count">透明 {transparentCount}</span>
-              ) : null}
-            </div>
-
-            {sourceImage && colorCounts.length > 0 ? (
-              <>
-                <div className="color-controls">
-                  <div className="segmented-control" aria-label="カラー表示モード">
-                    <button
-                      className={colorDisplayMode === 'grouped' ? 'active' : ''}
-                      type="button"
-                      onClick={() => setColorDisplayMode('grouped')}
-                    >
-                      まとめ
-                    </button>
-                    <button
-                      className={colorDisplayMode === 'exact' ? 'active' : ''}
-                      type="button"
-                      onClick={() => setColorDisplayMode('exact')}
-                    >
-                      完全一致
-                    </button>
-                  </div>
-
-                  {colorDisplayMode === 'grouped' ? (
-                    <label className="group-target-row">
-                      <span>目標グループ数</span>
-                      <select
-                        value={groupTargetCount}
-                        onChange={(event) => {
-                          setGroupTargetCount(Number(event.target.value));
-                          setExpandedGroupKeys(new Set());
-                        }}
-                      >
-                        {GROUP_TARGETS.map((target) => (
-                          <option key={target} value={target}>
-                            {target}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                  ) : null}
-                </div>
-
-                <div className="color-list">
-                  <div className="color-list-header" aria-hidden="true">
-                    <span>色</span>
-                    <span>セル</span>
-                    <span>割合</span>
-                    <span>内包</span>
-                    <span>操作</span>
-                  </div>
-                  {displayedColorGroups.map((group) => {
-                    const isExpanded = expandedGroupKeys.has(group.key);
-                    const canExpand = colorDisplayMode === 'grouped' && group.colors.length > 1;
-                    const colorRowContent = (
-                      <>
-                        <span
-                          className={group.alpha === 0 ? 'color-swatch transparent' : 'color-swatch'}
-                          style={{ backgroundColor: group.cssColor }}
-                          aria-hidden="true"
-                        />
-                        <span className="color-label">{group.label}</span>
-                        <span className="color-count">{group.count}</span>
-                        <span className="color-percent">
-                          {((group.count / totalPixels) * 100).toFixed(1)}%
-                        </span>
-                        <span className="color-contained">
-                          {canExpand ? `${group.colors.length}色` : ''}
-                        </span>
-                        <span className="color-expand">{canExpand ? (isExpanded ? '閉じる' : '内訳') : ''}</span>
-                      </>
-                    );
-
-                    return (
-                      <div className="color-group" key={group.key}>
-                        {canExpand ? (
-                          <button
-                            className="color-row color-row-button"
-                            type="button"
-                            aria-expanded={isExpanded}
-                            onClick={() => {
-                              toggleExpandedGroup(group.key);
-                            }}
-                          >
-                            {colorRowContent}
-                          </button>
-                        ) : (
-                          <div className="color-row">
-                            {colorRowContent}
-                          </div>
-                        )}
-
-                        {isExpanded ? (
-                          <div className="nested-color-list">
-                            {group.colors.map((color) => (
-                              <div className="nested-color-row" key={color.key}>
-                                <span
-                                  className={color.alpha === 0 ? 'color-swatch transparent' : 'color-swatch'}
-                                  style={{ backgroundColor: color.cssColor }}
-                                  aria-hidden="true"
-                                />
-                                <span className="color-label">{color.label}</span>
-                                <span className="color-count">{color.count}</span>
-                                <span className="color-percent">
-                                  {((color.count / totalPixels) * 100).toFixed(1)}%
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        ) : null}
-                      </div>
-                    );
-                  })}
-                </div>
-              </>
-            ) : (
-              <p className="color-note">プレビューに描画されたセル色をカウントします。</p>
-            )}
-          </div>
           <canvas ref={exportCanvasRef} className="export-canvas" aria-hidden="true" />
         </section>
+
+        <aside className="color-panel" aria-label="プレビュー内の色数">
+          <div className="color-panel-heading">
+            <div>
+              <h2>色</h2>
+              <span>
+                {sourceImage
+                  ? colorSummary
+                  : '画像選択後に集計します'}
+              </span>
+            </div>
+            {sourceImage ? (
+              <span className="transparent-count">透明 {transparentCount}</span>
+            ) : null}
+          </div>
+
+          {sourceImage && colorCounts.length > 0 ? (
+            <>
+              <div className="color-controls">
+                <div className="segmented-control" aria-label="カラー表示モード">
+                  <button
+                    className={colorDisplayMode === 'grouped' ? 'active' : ''}
+                    type="button"
+                    onClick={() => setColorDisplayMode('grouped')}
+                  >
+                    Grouped
+                  </button>
+                  <button
+                    className={colorDisplayMode === 'exact' ? 'active' : ''}
+                    type="button"
+                    onClick={() => setColorDisplayMode('exact')}
+                  >
+                    Exact
+                  </button>
+                </div>
+
+                {colorDisplayMode === 'grouped' ? (
+                  <label className="group-target-row">
+                    <span>目標</span>
+                    <select
+                      value={groupTargetCount}
+                      onChange={(event) => {
+                        setGroupTargetCount(Number(event.target.value));
+                        setExpandedGroupKeys(new Set());
+                      }}
+                    >
+                      {GROUP_TARGETS.map((target) => (
+                        <option key={target} value={target}>
+                          {target}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                ) : null}
+              </div>
+
+              <div className="color-list">
+                <div className="color-list-header" aria-hidden="true">
+                  <span>色</span>
+                  <span>セル</span>
+                  <span>割合</span>
+                  <span>内包</span>
+                  <span>操作</span>
+                </div>
+                {displayedColorGroups.map((group) => {
+                  const isExpanded = expandedGroupKeys.has(group.key);
+                  const canExpand = colorDisplayMode === 'grouped' && group.colors.length > 1;
+                  const colorRowContent = (
+                    <>
+                      <span
+                        className={group.alpha === 0 ? 'color-swatch transparent' : 'color-swatch'}
+                        style={{ backgroundColor: group.cssColor }}
+                        aria-hidden="true"
+                      />
+                      <span className="color-label">{group.label}</span>
+                      <span className="color-count">{group.count}</span>
+                      <span className="color-percent">
+                        {((group.count / totalPixels) * 100).toFixed(1)}%
+                      </span>
+                      <span className="color-contained">
+                        {canExpand ? `${group.colors.length}色` : ''}
+                      </span>
+                      <span className="color-expand">{canExpand ? (isExpanded ? '閉じる' : '内訳') : ''}</span>
+                    </>
+                  );
+
+                  return (
+                    <div className="color-group" key={group.key}>
+                      {canExpand ? (
+                        <button
+                          className="color-row color-row-button"
+                          type="button"
+                          aria-expanded={isExpanded}
+                          onClick={() => {
+                            toggleExpandedGroup(group.key);
+                          }}
+                        >
+                          {colorRowContent}
+                        </button>
+                      ) : (
+                        <div className="color-row">
+                          {colorRowContent}
+                        </div>
+                      )}
+
+                      {isExpanded ? (
+                        <div className="nested-color-list">
+                          {group.colors.map((color) => (
+                            <div className="nested-color-row" key={color.key}>
+                              <span
+                                className={color.alpha === 0 ? 'color-swatch transparent' : 'color-swatch'}
+                                style={{ backgroundColor: color.cssColor }}
+                                aria-hidden="true"
+                              />
+                              <span className="color-label">{color.label}</span>
+                              <span className="color-count">{color.count}</span>
+                              <span className="color-percent">
+                                {((color.count / totalPixels) * 100).toFixed(1)}%
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      ) : null}
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          ) : (
+            <p className="color-note">プレビューに描画されたセル色をカウントします。</p>
+          )}
+        </aside>
       </div>
     </main>
   );
