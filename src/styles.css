@@ -692,10 +692,13 @@ label:has(input:focus-visible),
 
   .topbar-actions {
     display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(96px, 0.7fr);
+    width: 100%;
   }
 
   .secondary-action,
   .primary-action {
+    min-width: 0;
     width: 100%;
   }
 
