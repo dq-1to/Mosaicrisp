@@ -143,7 +143,11 @@ p {
 }
 
 h1 {
+  font-family:
+    "Arial Rounded MT Bold", "Aptos Display", "Segoe UI", ui-sans-serif,
+    system-ui, sans-serif;
   font-size: clamp(1.8rem, 2.6vw, 2.35rem);
+  font-weight: 900;
   line-height: 1;
 }
 

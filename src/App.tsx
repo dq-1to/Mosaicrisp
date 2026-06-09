@@ -626,7 +626,7 @@ function App() {
         <div className="brand-lockup">
           <MosaicrispMark />
           <div>
-            <p className="eyebrow">ローカル画像ドット絵ツール</p>
+            <p className="eyebrow">画像ドット絵変換ツール</p>
             <h1 id="app-title">Mosaicrisp</h1>
           </div>
         </div>
@@ -675,7 +675,7 @@ function App() {
                 </span>
               </div>
             ) : (
-              <p>PNG / JPEG / WebP などをローカルで読み込みます。</p>
+              <p>PNG / JPEG / WebP などの画像を選択できます。</p>
             )}
           </div>
 
