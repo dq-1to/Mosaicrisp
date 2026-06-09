@@ -143,7 +143,11 @@ p {
 }
 
 h1 {
+  font-family:
+    "Arial Rounded MT Bold", "Aptos Display", "Segoe UI", ui-sans-serif,
+    system-ui, sans-serif;
   font-size: clamp(1.8rem, 2.6vw, 2.35rem);
+  font-weight: 900;
   line-height: 1;
 }
 
@@ -195,12 +199,11 @@ h2 {
 
 .tool-layout {
   display: grid;
-  grid-template-columns: 72px minmax(280px, 330px) minmax(0, 1fr) minmax(290px, 330px);
+  grid-template-columns: minmax(280px, 330px) minmax(0, 1fr) minmax(290px, 330px);
   gap: 10px;
   align-items: start;
 }
 
-.side-toolbar,
 .control-panel,
 .preview-panel,
 .color-panel {
@@ -208,39 +211,6 @@ h2 {
   border-radius: 8px;
   background: var(--paper);
   box-shadow: var(--panel-shadow);
-}
-
-.side-toolbar {
-  position: sticky;
-  top: 12px;
-  display: grid;
-  gap: 8px;
-  justify-items: center;
-  padding: 12px 10px;
-}
-
-.side-tool {
-  display: grid;
-  width: 48px;
-  height: 48px;
-  place-items: center;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  color: var(--ink);
-  background: transparent;
-  font-size: 1.25rem;
-  font-weight: 900;
-}
-
-.side-tool:hover,
-.side-tool.active {
-  border-color: rgb(34 191 211 / 42%);
-  color: var(--accent-strong);
-  background: #effbfc;
-}
-
-.side-tool.active {
-  box-shadow: inset 3px 0 0 var(--cyan);
 }
 
 .control-panel {
@@ -320,6 +290,72 @@ h2 {
 .control-group {
   display: grid;
   gap: 12px;
+}
+
+.advanced-settings {
+  display: grid;
+  gap: 0;
+}
+
+.advanced-settings summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  font-weight: 800;
+  cursor: pointer;
+  list-style: none;
+}
+
+.advanced-settings summary::-webkit-details-marker {
+  display: none;
+}
+
+.advanced-settings summary::after {
+  content: "+";
+  display: grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border-radius: 6px;
+  color: var(--accent-strong);
+  background: var(--accent-soft);
+  font-weight: 900;
+}
+
+.advanced-settings[open] summary {
+  border-color: rgb(31 122 104 / 36%);
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+  background: #f8fafb;
+}
+
+.advanced-settings[open] summary::after {
+  content: "-";
+}
+
+.advanced-settings summary span:last-child {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.advanced-settings-content {
+  display: grid;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid rgb(31 122 104 / 20%);
+  border-top: 0;
+  border-bottom-right-radius: 8px;
+  border-bottom-left-radius: 8px;
+  background: #fff;
 }
 
 .group-heading,
@@ -681,25 +717,45 @@ label:has(input:focus-visible),
 }
 
 @media (max-width: 1180px) {
-  .tool-layout {
-    grid-template-columns: 72px minmax(260px, 330px) minmax(0, 1fr);
-  }
-
-  .color-panel {
-    grid-column: 2 / -1;
-    position: static;
-  }
-}
-
-@media (max-width: 860px) {
   .app-shell {
-    width: min(100% - 20px, 680px);
-    padding-top: 18px;
+    width: min(100% - 20px, 760px);
   }
 
   .app-topbar {
     display: grid;
     gap: 14px;
+  }
+
+  .topbar-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(96px, 0.7fr);
+    width: 100%;
+  }
+
+  .secondary-action,
+  .primary-action {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .tool-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .control-panel,
+  .color-panel {
+    grid-column: auto;
+    position: static;
+  }
+
+  .preview-stage {
+    min-height: 420px;
+  }
+}
+
+@media (max-width: 860px) {
+  .app-shell {
+    padding-top: 18px;
   }
 
   .brand-mark {
@@ -709,25 +765,6 @@ label:has(input:focus-visible),
 
   h1 {
     font-size: 2.2rem;
-  }
-
-  .tool-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .side-toolbar {
-    position: static;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    padding: 8px;
-  }
-
-  .side-tool {
-    width: 100%;
-  }
-
-  .control-panel,
-  .color-panel {
-    position: static;
   }
 
   .preview-stage {
@@ -749,10 +786,6 @@ label:has(input:focus-visible),
 }
 
 @media (max-width: 520px) {
-  .app-topbar {
-    display: grid;
-  }
-
   .brand-lockup {
     align-items: flex-start;
   }
@@ -762,25 +795,12 @@ label:has(input:focus-visible),
     height: 48px;
   }
 
-  .topbar-actions {
-    display: grid;
-  }
-
-  .secondary-action,
-  .primary-action {
-    width: 100%;
-  }
-
   .preset-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .range-row {
     grid-template-columns: 38px minmax(0, 1fr) 38px;
-  }
-
-  .preview-toolbar {
-    display: grid;
   }
 
   .color-panel-heading {
