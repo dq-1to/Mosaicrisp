@@ -799,10 +799,6 @@ label:has(input:focus-visible),
     grid-template-columns: 38px minmax(0, 1fr) 38px;
   }
 
-  .preview-toolbar {
-    display: grid;
-  }
-
   .color-panel-heading {
     display: grid;
   }
