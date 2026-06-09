@@ -322,6 +322,72 @@ h2 {
   gap: 12px;
 }
 
+.advanced-settings {
+  display: grid;
+  gap: 0;
+}
+
+.advanced-settings summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  font-weight: 800;
+  cursor: pointer;
+  list-style: none;
+}
+
+.advanced-settings summary::-webkit-details-marker {
+  display: none;
+}
+
+.advanced-settings summary::after {
+  content: "+";
+  display: grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border-radius: 6px;
+  color: var(--accent-strong);
+  background: var(--accent-soft);
+  font-weight: 900;
+}
+
+.advanced-settings[open] summary {
+  border-color: rgb(31 122 104 / 36%);
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+  background: #f8fafb;
+}
+
+.advanced-settings[open] summary::after {
+  content: "-";
+}
+
+.advanced-settings summary span:last-child {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.advanced-settings-content {
+  display: grid;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid rgb(31 122 104 / 20%);
+  border-top: 0;
+  border-bottom-right-radius: 8px;
+  border-bottom-left-radius: 8px;
+  background: #fff;
+}
+
 .group-heading,
 .preview-toolbar {
   display: flex;

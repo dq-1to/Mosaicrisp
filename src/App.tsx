@@ -701,71 +701,80 @@ function App() {
             )}
           </div>
 
-          <div className="control-group">
-            <div className="group-heading">
-              <h2>プリセット</h2>
-              <span>{activePreset ? `${activePreset}x${activePreset}` : 'カスタム'}</span>
-            </div>
-            <div className="preset-grid">
-              {PRESETS.map((preset) => (
-                <button
-                  key={preset}
-                  className={activePreset === preset ? 'preset-button active' : 'preset-button'}
-                  type="button"
-                  onClick={() => applyPreset(preset)}
-                >
-                  {preset}
-                </button>
-              ))}
-            </div>
-          </div>
+          <details className="advanced-settings">
+            <summary>
+              <span>変換設定</span>
+              <span>{activePreset ? `${activePreset}x${activePreset}` : `${gridWidth} x ${gridHeight}`}</span>
+            </summary>
 
-          <div className="control-group">
-            <div className="group-heading">
-              <h2>グリッド</h2>
-              <span>{gridWidth} x {gridHeight}</span>
+            <div className="advanced-settings-content">
+              <div className="control-group">
+                <div className="group-heading">
+                  <h2>プリセット</h2>
+                  <span>{activePreset ? `${activePreset}x${activePreset}` : 'カスタム'}</span>
+                </div>
+                <div className="preset-grid">
+                  {PRESETS.map((preset) => (
+                    <button
+                      key={preset}
+                      className={activePreset === preset ? 'preset-button active' : 'preset-button'}
+                      type="button"
+                      onClick={() => applyPreset(preset)}
+                    >
+                      {preset}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="control-group">
+                <div className="group-heading">
+                  <h2>グリッド</h2>
+                  <span>{gridWidth} x {gridHeight}</span>
+                </div>
+                <label className="range-row">
+                  <span>幅</span>
+                  <input
+                    type="range"
+                    min={MIN_GRID}
+                    max={MAX_GRID}
+                    value={gridWidth}
+                    onChange={(event) => applyGridChange('width', Number(event.target.value))}
+                  />
+                  <output>{gridWidth}</output>
+                </label>
+                <label className="range-row">
+                  <span>高さ</span>
+                  <input
+                    type="range"
+                    min={MIN_GRID}
+                    max={MAX_GRID}
+                    value={gridHeight}
+                    onChange={(event) => applyGridChange('height', Number(event.target.value))}
+                  />
+                  <output>{gridHeight}</output>
+                </label>
+              </div>
+
+              <label className="toggle-row">
+                <input
+                  type="checkbox"
+                  checked={lockAspectRatio}
+                  onChange={(event) => setLockAspectRatio(event.target.checked)}
+                />
+                <span>アスペクト比を固定</span>
+              </label>
+
+              <label className="toggle-row">
+                <input
+                  type="checkbox"
+                  checked={showGridLines}
+                  onChange={(event) => setShowGridLines(event.target.checked)}
+                />
+                <span>グリッド線を表示</span>
+              </label>
             </div>
-            <label className="range-row">
-              <span>幅</span>
-              <input
-                type="range"
-                min={MIN_GRID}
-                max={MAX_GRID}
-                value={gridWidth}
-                onChange={(event) => applyGridChange('width', Number(event.target.value))}
-              />
-              <output>{gridWidth}</output>
-            </label>
-            <label className="range-row">
-              <span>高さ</span>
-              <input
-                type="range"
-                min={MIN_GRID}
-                max={MAX_GRID}
-                value={gridHeight}
-                onChange={(event) => applyGridChange('height', Number(event.target.value))}
-              />
-              <output>{gridHeight}</output>
-            </label>
-          </div>
-
-          <label className="toggle-row">
-            <input
-              type="checkbox"
-              checked={lockAspectRatio}
-              onChange={(event) => setLockAspectRatio(event.target.checked)}
-            />
-            <span>アスペクト比を固定</span>
-          </label>
-
-          <label className="toggle-row">
-            <input
-              type="checkbox"
-              checked={showGridLines}
-              onChange={(event) => setShowGridLines(event.target.checked)}
-            />
-            <span>グリッド線を表示</span>
-          </label>
+          </details>
 
           {errorMessage ? <p className="error-message" role="alert">{errorMessage}</p> : null}
         </aside>
