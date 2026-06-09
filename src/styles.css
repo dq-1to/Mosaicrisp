@@ -195,12 +195,11 @@ h2 {
 
 .tool-layout {
   display: grid;
-  grid-template-columns: 72px minmax(280px, 330px) minmax(0, 1fr) minmax(290px, 330px);
+  grid-template-columns: minmax(280px, 330px) minmax(0, 1fr) minmax(290px, 330px);
   gap: 10px;
   align-items: start;
 }
 
-.side-toolbar,
 .control-panel,
 .preview-panel,
 .color-panel {
@@ -208,39 +207,6 @@ h2 {
   border-radius: 8px;
   background: var(--paper);
   box-shadow: var(--panel-shadow);
-}
-
-.side-toolbar {
-  position: sticky;
-  top: 12px;
-  display: grid;
-  gap: 8px;
-  justify-items: center;
-  padding: 12px 10px;
-}
-
-.side-tool {
-  display: grid;
-  width: 48px;
-  height: 48px;
-  place-items: center;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  color: var(--ink);
-  background: transparent;
-  font-size: 1.25rem;
-  font-weight: 900;
-}
-
-.side-tool:hover,
-.side-tool.active {
-  border-color: rgb(34 191 211 / 42%);
-  color: var(--accent-strong);
-  background: #effbfc;
-}
-
-.side-tool.active {
-  box-shadow: inset 3px 0 0 var(--cyan);
 }
 
 .control-panel {
@@ -770,17 +736,6 @@ label:has(input:focus-visible),
 
   .tool-layout {
     grid-template-columns: 1fr;
-  }
-
-  .side-toolbar {
-    position: static;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    padding: 8px;
-  }
-
-  .side-tool {
-    width: 100%;
-    min-width: 0;
   }
 
   .control-panel,

@@ -81,14 +81,6 @@ function MosaicrispMark() {
   );
 }
 
-const SIDE_NAV_ITEMS = [
-  { label: '画像', icon: '▧' },
-  { label: 'プリセット', icon: '▦' },
-  { label: 'グリッド', icon: '⌗' },
-  { label: '色', icon: '●' },
-  { label: '出力', icon: '↓' },
-] as const;
-
 function clampGrid(value: number): number {
   return Math.min(MAX_GRID, Math.max(MIN_GRID, Math.round(value)));
 }
@@ -662,20 +654,6 @@ function App() {
       </header>
 
       <div className="tool-layout">
-        <nav className="side-toolbar" aria-label="主要ツール">
-          {SIDE_NAV_ITEMS.map((item, index) => (
-            <button
-              key={item.label}
-              className={index === 0 ? 'side-tool active' : 'side-tool'}
-              type="button"
-              title={item.label}
-              aria-label={item.label}
-            >
-              <span aria-hidden="true">{item.icon}</span>
-            </button>
-          ))}
-        </nav>
-
         <aside className="control-panel" aria-label="変換設定">
           <div className="upload-box">
             <input
