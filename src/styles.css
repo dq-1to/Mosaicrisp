@@ -681,20 +681,8 @@ label:has(input:focus-visible),
 }
 
 @media (max-width: 1180px) {
-  .tool-layout {
-    grid-template-columns: 72px minmax(260px, 330px) minmax(0, 1fr);
-  }
-
-  .color-panel {
-    grid-column: 2 / -1;
-    position: static;
-  }
-}
-
-@media (max-width: 860px) {
   .app-shell {
-    width: min(100% - 20px, 680px);
-    padding-top: 18px;
+    width: min(100% - 20px, 760px);
   }
 
   .app-topbar {
@@ -702,13 +690,13 @@ label:has(input:focus-visible),
     gap: 14px;
   }
 
-  .brand-mark {
-    width: 54px;
-    height: 54px;
+  .topbar-actions {
+    display: grid;
   }
 
-  h1 {
-    font-size: 2.2rem;
+  .secondary-action,
+  .primary-action {
+    width: 100%;
   }
 
   .tool-layout {
@@ -723,11 +711,32 @@ label:has(input:focus-visible),
 
   .side-tool {
     width: 100%;
+    min-width: 0;
   }
 
   .control-panel,
   .color-panel {
+    grid-column: auto;
     position: static;
+  }
+
+  .preview-stage {
+    min-height: 420px;
+  }
+}
+
+@media (max-width: 860px) {
+  .app-shell {
+    padding-top: 18px;
+  }
+
+  .brand-mark {
+    width: 54px;
+    height: 54px;
+  }
+
+  h1 {
+    font-size: 2.2rem;
   }
 
   .preview-stage {
@@ -749,10 +758,6 @@ label:has(input:focus-visible),
 }
 
 @media (max-width: 520px) {
-  .app-topbar {
-    display: grid;
-  }
-
   .brand-lockup {
     align-items: flex-start;
   }
@@ -760,15 +765,6 @@ label:has(input:focus-visible),
   .brand-mark {
     width: 48px;
     height: 48px;
-  }
-
-  .topbar-actions {
-    display: grid;
-  }
-
-  .secondary-action,
-  .primary-action {
-    width: 100%;
   }
 
   .preset-grid {
