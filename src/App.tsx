@@ -434,12 +434,12 @@ function App() {
   const [groupTargetCount, setGroupTargetCount] = useState(24);
   const [expandedGroupKeys, setExpandedGroupKeys] = useState<Set<string>>(new Set());
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [isRendering, setIsRendering] = useState(false);
 
   const previewCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const exportCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const objectUrlRef = useRef<string | null>(null);
+  const imageRequestIdRef = useRef(0);
 
   const activePreset = useMemo(() => {
     if (gridWidth !== gridHeight) {
@@ -524,6 +524,9 @@ function App() {
       return;
     }
 
+    const requestId = imageRequestIdRef.current + 1;
+    imageRequestIdRef.current = requestId;
+
     if (!file.type.startsWith('image/')) {
       setErrorMessage('画像ファイルを選択してください。');
       return;
@@ -536,6 +539,11 @@ function App() {
 
     try {
       await image.decode();
+
+      if (requestId !== imageRequestIdRef.current) {
+        URL.revokeObjectURL(objectUrl);
+        return;
+      }
 
       if (objectUrlRef.current) {
         URL.revokeObjectURL(objectUrlRef.current);
@@ -558,7 +566,9 @@ function App() {
       }
     } catch {
       URL.revokeObjectURL(objectUrl);
-      setErrorMessage('画像を読み込めませんでした。別の画像で試してください。');
+      if (requestId === imageRequestIdRef.current) {
+        setErrorMessage('画像を読み込めませんでした。別の画像で試してください。');
+      }
     }
   };
 
@@ -591,8 +601,6 @@ function App() {
       return;
     }
 
-    setIsRendering(true);
-
     try {
       const nextColorCounts = drawPixelArt(
         sourceImage.element,
@@ -607,8 +615,6 @@ function App() {
     } catch {
       setColorCounts([]);
       setErrorMessage('プレビューの描画に失敗しました。');
-    } finally {
-      setIsRendering(false);
     }
   }, [gridHeight, gridWidth, showGridLines, sourceImage]);
 
@@ -764,7 +770,7 @@ function App() {
               <span>{outputLabel}</span>
             </div>
             <div className="render-status" aria-live="polite">
-              {isRendering ? '描画中' : sourceImage ? '準備完了' : '未選択'}
+              {sourceImage ? '準備完了' : '未選択'}
             </div>
           </div>
 
@@ -803,6 +809,7 @@ function App() {
                   <button
                     className={colorDisplayMode === 'grouped' ? 'active' : ''}
                     type="button"
+                    aria-pressed={colorDisplayMode === 'grouped'}
                     onClick={() => setColorDisplayMode('grouped')}
                   >
                     Grouped
@@ -810,6 +817,7 @@ function App() {
                   <button
                     className={colorDisplayMode === 'exact' ? 'active' : ''}
                     type="button"
+                    aria-pressed={colorDisplayMode === 'exact'}
                     onClick={() => setColorDisplayMode('exact')}
                   >
                     Exact
@@ -818,7 +826,7 @@ function App() {
 
                 {colorDisplayMode === 'grouped' ? (
                   <label className="group-target-row">
-                    <span>目標</span>
+                    <span>グループ数</span>
                     <select
                       value={groupTargetCount}
                       onChange={(event) => {
